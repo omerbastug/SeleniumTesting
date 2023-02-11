@@ -21,14 +21,12 @@ class LandingPageTest {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		System.setProperty("webdriver.chrome.driver", "/Users/omersamibastug/Downloads/chromedriver_mac64/chromedriver");
+		System.setProperty("webdriver.chrome.driver", "C:\\chromedriver.exe");
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--start-maximized");
-		wd = new ChromeDriver(options);
+		wd = (WebDriver) new ChromeDriver(options);
 		baseURL = "https://clickup.com/";
 		wd.get(baseURL);
-
-		
 	}
 
 	@AfterAll
