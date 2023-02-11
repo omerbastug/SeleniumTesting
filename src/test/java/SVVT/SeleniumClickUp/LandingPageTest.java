@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -16,9 +17,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 class LandingPageTest {
 	private static WebDriver wd;
     private static String baseURL;
-    public void print(String s) {
-    	System.out.println(s);
-    }
+
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -27,8 +26,6 @@ class LandingPageTest {
 		options.addArguments("--start-maximized");
 		wd = new ChromeDriver(options);
 		baseURL = "https://clickup.com/";
-		String email = System.getProperty("EMAIL");
-		System.out.println(email);		
 		wd.get(baseURL);
 
 		
@@ -45,7 +42,7 @@ class LandingPageTest {
 		
 		//send invalid email input
 		WebElement emailInput = wd.findElement(By.xpath("/html/body/div[4]/div[3]/div[1]/div[1]/input"));
-		emailInput.sendKeys("asd");
+		emailInput.sendKeys("invalid email input");
 		
 		// click the submit button
 		wd.findElement(By.xpath("/html/body/div[4]/div[3]/div[1]/div[1]/button")).click();
@@ -53,18 +50,30 @@ class LandingPageTest {
 		// check if the input field has error class
 		boolean errorShowed = Arrays.asList(emailInput.getAttribute("class").split(" ")).contains("errored");
 		assertTrue(errorShowed);
-		System.out.print(errorShowed);
 		
 		// check if the correct error message is displayed
 		WebElement errorMessageDiv = wd.findElement(By.xpath("/html/body/div[4]/div[3]/div[1]/div[1]/div"));
 		String errormessage = errorMessageDiv.getText();
-		System.out.println(errormessage);
 
 		assertEquals(errormessage, "Please enter a valid email address");
-		
-		System.out.println(emailInput.getAttribute("value"));
-		assertTrue(true);
 	}
+	
+	
+	@Test
+	void signUpButtonColorChangeOnScrollTest() throws InterruptedException {
+		WebElement signupButton = wd.findElement(By.xpath("/html/body/div[4]/div[2]/div/header/div/nav/div/div/button"));
+		
+		//check button color white at load
+		String color = signupButton.getCssValue("background-color");
+		assertEquals(color, "rgba(255, 255, 255, 1)");
+		
+		// check button color purple after scrolling
+		JavascriptExecutor jse = (JavascriptExecutor) wd;
+		jse.executeScript("window.scrollBy(0, 200)");
+		Thread.sleep(500); // wait for the color change
+		String newcolor = signupButton.getCssValue("background-color");
+		assertEquals(newcolor, "rgba(123, 104, 238, 1)");
 
+	}
 }
 
